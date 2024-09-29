@@ -26,8 +26,8 @@ jobs:
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
-          username: ${{ actor}}
-          password: ${{ GHCR_PAT }}
+          username: ${{ github.actor }}  # Use GitHub's actor as the username
+          password: ${{ secrets.GHCR_PAT }}  # Make sure this secret is set up
 
       # Build and push the Docker image for multiple platforms to GHCR
       - name: Build and push Docker image
