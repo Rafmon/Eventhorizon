@@ -1,0 +1,44 @@
+﻿{
+  "language": {
+    "name": "fr",
+    "icon": "🇫🇷"
+  },
+  "SaveButton": "Enregistrer",
+  "CancelButton": "Annuler",
+  "EditButton": "Éditer",
+  "DeleteButton": "Supprimer",
+
+  "Address": "Adresse",
+  "EventName": "Nom de l'événement",
+  "EventsAddNew": "Ajouter un nouvel événement",
+
+  "TimelineNextEvent": "Prochain événement {0} dans {1} secondes.",
+  "TimelineNoEvents": "Il n'y a plus d'événements dans ce cycle.",
+  "TimelineCurrentProgress": "Progression actuelle : {0} sur {1} secondes",
+  "TimelineEventOn": "activer",
+  "TimelineEventOff": "désactiver",
+
+  "SystemConfigurationTitle": "Configuration du système",
+
+  "TimelineDurationLabel": "Durée de la chronologie en secondes",
+  "SimulateI2CLabel": "Simuler les appareils I2C",
+  "ExportEventsButton": "Exporter events.json",
+  "ImportEventsLabel": "Importer des événements",
+
+  "FileUploadStatus": "Statut du téléchargement",
+  "ConfirmUploadButton": "Confirmer",
+
+  "SaveSettingsButton": "Enregistrer les paramètres",
+
+  "ValidationErrorSummary": "Des erreurs se sont produites :",
+
+  "UploadInProgressMessage": "Téléchargement en cours, veuillez patienter...",
+  "UploadSuccessMessage": "Téléchargement réussi !",
+  "UploadConfirmationMessage": "Êtes-vous sûr de vouloir télécharger le fichier ?",
+
+  "MemoryTitle": "Mémoire",
+  "MemoryListLabel": "Adresses de mémoire :",
+  "MemoryAddressLabel": "Adresse",
+  "MemoryNameLabel": "Nom",
+  "MemoryIsActiveLabel": "Actif"
+}

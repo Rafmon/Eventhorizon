@@ -1,0 +1,124 @@
+﻿@page "/events"
+@using EventHorizon.src.Events
+@using EventHorizon.src.Ui;
+@using EventHorizon.src.Util;
+@inject NavigationManager NavigationManager
+@inject EventManager EventManager
+
+@inherits BaseComponent;
+
+<h3>Events</h3>
+
+<div class="button-container">
+    <button class="btn btn-success" @onclick="CreateNewEvent">@I18n.Translate("EventsAddNew")</button>
+    <button class="btn btn-primary" @onclick="EditSelectedEvent" disabled="@(!IsEventSelected)">@I18n.Translate("EditButton")</button>
+    <button class="btn btn-danger" @onclick="DeleteSelectedEvent" disabled="@(!IsEventSelected)">@I18n.Translate("DeleteButton")</button>
+</div>
+
+<div class="table-container">
+    <table ondragover="event.preventDefault();" class="table">
+        <thead>
+            <tr>
+                <th style="width:30px">@I18n.Translate("Address")</th>
+                <th>@I18n.Translate("EventName")</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (Event E in EventManager.Events)
+            {
+                if (E != null)
+                {
+                    <tr draggable="true" style="list-style-type:none; height:30px" @key="E.ID" tabindex="1"
+                    @ondrop="@(()=> Drop(E))" @ondrag="@(()=> StartDrag(E))" @onclick="() => SetSelect(E)" @ondblclick="() => OnEventDoubleClick(E)" class="@DivCss(E)">
+                        <td>@E.Address</td>
+                        <td>@E.Name</td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>
+
+
+
+@code
+{
+    // Logic for selecting an event
+    Event? SelectedEvent = null;
+
+    bool IsEventSelected => SelectedEvent != null;
+
+    bool IsSelected(Event e) => SelectedEvent == e;
+
+    string DivCss(Event e) => IsSelected(e) ? "bg-success text-white" : "bg-light";
+
+    void SetSelect(Event e)
+    {
+        SelectedEvent = e;
+    }
+
+    void OnEventDoubleClick(Event e)
+    {
+        if (e != null)
+        {
+            SelectedEvent = e;
+            EditSelectedEvent();
+        }
+    }
+
+    void EditSelectedEvent()
+    {
+        if (SelectedEvent != null)
+        {
+            NavigationManager.NavigateTo($"/events/edit/{SelectedEvent.ID}");
+        }
+    }
+
+    void DeleteSelectedEvent()
+    {
+        if (SelectedEvent != null)
+        {
+            EventManager.RemoveEvent(SelectedEvent);
+            // Optional: Save changes
+            // SaveManager.SaveEvents(EventManager.Events);
+            SelectedEvent = null;
+        }
+    }
+
+    void CreateNewEvent()
+    {
+        NavigationManager.NavigateTo("/events/edit");
+    }
+
+    int currentIndex;
+
+
+    //Drag and Drop
+    void StartDrag(Event e)
+    {
+        currentIndex = GetIndex(e);
+    }
+
+    int GetIndex(Event e)
+    {
+        return EventManager.Events.FindIndex(a => a.ID == e.ID);
+    }
+
+    void Drop(Event e)
+    {
+        if (e != null)
+        {
+            var index = GetIndex(e);
+            var current = EventManager.Events[currentIndex];
+            EventManager.Events.RemoveAt(currentIndex);
+            EventManager.Events.Insert(index, current);
+            currentIndex = index;
+
+            StateHasChanged();
+        }
+        else
+        {
+            Console.WriteLine("Drop - null");
+        }
+    }
+}

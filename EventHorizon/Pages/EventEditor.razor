@@ -1,0 +1,140 @@
+﻿@page "/events/edit/{eventId:guid?}"
+@using EventHorizon.src.Events
+@inject EventManager EventManager
+@inject NavigationManager NavigationManager
+@inject MemoryController MemoryController;
+@inherits BaseComponent;
+@using EventHorizon.src.Ui;
+
+<h3>@(isNewEvent ? "Neues Event erstellen" : "Event bearbeiten")</h3>
+
+@if (EventToEdit != null)
+{
+    <EditForm Model="EventToEdit" OnValidSubmit="HandleValidSubmit">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <!-- Name -->
+        <div class="row mb-3">
+            <label for="eventName" class="col-sm-2 col-form-label">Name</label>
+            <div class="col-sm-2">
+                <InputText @bind-Value="EventToEdit.Name" class="form-control" id="eventName" />
+            </div>
+        </div>
+
+        <!-- Start time and Random Start -->
+        <div class="row mb-3 align-items-center">
+            <label for="eventStart" class="col-sm-2 col-form-label">Startzeit</label>
+            <div class="col-sm-2">
+                <TimeOnlyInput @bind-Value="EventToEdit.EventStart" class="form-control" id="eventStart" />
+            </div>
+            <div class="col-sm-2 form-check">
+                <InputCheckbox @bind-Value="EventToEdit.IsEventStartRandom" class="form-check-input" id="randomStartCheck" />
+                <label class="form-check-label" for="randomStartCheck">Zufälliger Start</label>
+            </div>
+        </div>
+
+        <!-- Start Offset (visible when Random Start is active) -->
+        @if (EventToEdit.IsEventStartRandom)
+        {
+            <div class="row mb-3">
+                <label for="eventStartOffset" class="col-sm-2 col-form-label">Start-Offset</label>
+                <div class="col-sm-2">
+                    <TimeOnlyInput @bind-Value="EventToEdit.EventStartOffset" class="form-control" id="eventStartOffset" />
+                </div>
+            </div>
+        }
+
+        <!-- End time and Random End -->
+        <div class="row mb-3 align-items-center">
+            <label for="eventEnd" class="col-sm-2 col-form-label">Endzeit</label>
+            <div class="col-sm-2">
+                <TimeOnlyInput @bind-Value="EventToEdit.EventEnd" class="form-control" id="eventEnd" />
+            </div>
+            <div class="col-sm-2 form-check">
+                <InputCheckbox @bind-Value="EventToEdit.IsEventEndRandom" class="form-check-input" id="randomEndCheck" />
+                <label class="form-check-label" for="randomEndCheck">Zufälliges Ende</label>
+            </div>
+        </div>
+
+        <!-- End Offset (visible when Random End is active) -->
+        @if (EventToEdit.IsEventEndRandom)
+        {
+            <div class="row mb-3">
+                <label for="eventEndOffset" class="col-sm-2 col-form-label">End-Offset</label>
+                <div class="col-sm-2">
+                    <TimeOnlyInput @bind-Value="EventToEdit.EventEndOffset" class="form-control" id="eventEndOffset" />
+                </div>
+            </div>
+        }
+
+        <!-- Address -->
+        <div class="row mb-3">
+            <label for="eventAddress" class="col-sm-2 col-form-label">Adresse</label>
+            <div class="col-sm-2">
+                <InputSelect @bind-Value="EventToEdit.Address" class="form-control" id="eventAddress">
+                    @foreach (var address in MemoryController.GetMemoryAddresses())
+                    {
+                        <option value="@address">@address</option>
+                    }
+                </InputSelect>
+            </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="row mb-3">
+            <div class="col-sm-2"></div>
+            <div class="col-sm-6">
+                <button type="submit" class="btn btn-success me-2">Speichern</button>
+                <button type="button" class="btn btn-secondary" @onclick="ReturnToEventsPage">Abbrechen</button>
+            </div>
+        </div>
+
+    </EditForm>
+}
+else
+{
+    <p>Lade Daten...</p>
+}
+
+@code {
+    [Parameter]
+    public Guid? eventId { get; set; }
+
+    private Event? EventToEdit;
+    private bool isNewEvent = false;
+
+    protected override void OnInitialized()
+    {
+        if (eventId == null || eventId == Guid.Empty)
+        {
+            EventToEdit = new Event();
+            isNewEvent = true;
+        }
+        else
+        {
+            // Load existing event
+            EventToEdit = EventManager.Events.FirstOrDefault(e => e.ID == eventId);
+            if (EventToEdit == null)
+            {
+                // No event found, return to event list
+                ReturnToEventsPage();
+            }
+        }
+    }
+
+    private void HandleValidSubmit()
+    {
+        if (isNewEvent && EventToEdit != null)
+        {
+            EventManager.AddEvent(EventToEdit);
+        }
+        // Save changes and return
+        ReturnToEventsPage();
+    }
+
+    private void ReturnToEventsPage()
+    {
+        NavigationManager.NavigateTo("/events");
+    }
+}

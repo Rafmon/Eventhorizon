@@ -1,0 +1,46 @@
+﻿{
+  "language": {
+    "name": "de",
+    "icon": "🇩🇪"
+  },
+  "SaveButton": "Speichern",
+  "CancelButton": "Abbrechen",
+  "EditButton": "Bearbeiten",
+  "DeleteButton": "Löschen",
+
+  "Address": "Adresse",
+  "EventName": "Event Name",
+
+  "TimelineNextEvent": "Nächstes Event {0} in {1} Sekunden.",
+  "TimelineNoEvents": "Es gibt keine Events mehr in Diesem Zyklus.",
+  "TimelineCurrentProgress": "Aktueller Fortschritt: {0} von {1} Sekunden",
+  "TimelineEventOn": "aktiviere",
+  "TimelineEventOff": "deaktiviere",
+
+  "EventsAddNew": "Neues Event hinzufügen",
+
+  "SystemConfigurationTitle": "System Configuration",
+
+  "TimelineDurationLabel": "Dauer der Timeline in Sekunden",
+  "SimulateI2CLabel": "Simulate I2C Devices",
+  "ExportEventsButton": "Exportiere events.json",
+  "ImportEventsLabel": "Importiere Events",
+
+  "FileUploadStatus": "Upload-Status",
+  "ConfirmUploadButton": "Bestätigen",
+
+  "SaveSettingsButton": "Einstellungen speichern",
+
+  "ValidationErrorSummary": "Es sind einige Fehler aufgetreten:",
+
+  "UploadInProgressMessage": "Upload läuft, bitte warten...",
+  "UploadSuccessMessage": "Upload erfolgreich!",
+  "UploadConfirmationMessage": "Sind Sie sicher, dass Sie die Datei hochladen möchten?",
+
+  "MemoryTitle": "Memory",
+  "MemoryListLabel": "Speicheradressen:",
+  "MemoryAddressLabel": "Adresse",
+  "MemoryNameLabel": "Name",
+  "MemoryIsActiveLabel": "Aktiv"
+
+}

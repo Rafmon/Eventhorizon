@@ -1,0 +1,46 @@
+﻿{
+  "language": {
+    "name": "en",
+    "icon": "🇬🇧"
+  },
+  "SaveButton": "Save",
+  "CancelButton": "Cancel",
+  "EditButton": "Edit",
+  "DeleteButton": "Delete",
+
+  "Address": "Address",
+  "EventName": "Event Name",
+  "EventsAddNew": "Add New Event",
+
+  "TimelineNextEvent": "Next event {0} in {1} seconds.",
+  "TimelineNoEvents": "There are no more events in this cycle.",
+  "TimelineCurrentProgress": "Current progress: {0} of {1} seconds",
+  "TimelineEventOn": "activate",
+  "TimelineEventOff": "deactivate",
+
+  "SystemConfigurationTitle": "System Configuration",
+
+  "TimelineDurationLabel": "Timeline Duration in Seconds",
+  "SimulateI2CLabel": "Simulate I2C Devices",
+  "ExportEventsButton": "Export events.json",
+  "ImportEventsLabel": "Import Events",
+
+  "FileUploadStatus": "Upload Status",
+  "ConfirmUploadButton": "Confirm",
+
+  "SaveSettingsButton": "Save Settings",
+
+  "ValidationErrorSummary": "Some errors occurred:",
+
+  "UploadInProgressMessage": "Upload in progress, please wait...",
+  "UploadSuccessMessage": "Upload successful!",
+  "UploadConfirmationMessage": "Are you sure you want to upload the file?",
+
+
+  "MemoryTitle": "Memory",
+  "MemoryListLabel": "Memory Addresses:",
+  "MemoryAddressLabel": "Address",
+  "MemoryNameLabel": "Name",
+  "MemoryIsActiveLabel": "Active"
+
+}

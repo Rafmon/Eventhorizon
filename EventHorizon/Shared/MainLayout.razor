@@ -1,0 +1,72 @@
+﻿@using EventHorizon.Pages
+@using EventHorizon.src.Util;
+@inherits LayoutComponentBase
+@inject NavigationManager NavigationManager
+@inject LocalizationService LocalizationService
+@inject IJSRuntime JSRuntime;
+@inject I18nHelper I18n;
+
+<PageTitle>EventHorizon</PageTitle>
+
+<div class="page">
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+
+    <main>
+        <div class="top-row">
+            <div class="d-flex align-items-center">
+                <TimeLineControl />
+            </div>
+            <div class="language-dropdown">
+                <select @onchange="ChangeLanguage" class="form-select">
+                    @foreach (var language in availableLanguages)
+                    {
+                        <option value="@language.Key" selected="@I18n.IsCurrentLanguage(language.Key)">
+                            @language.Value.Icon @language.Value.Name
+                        </option>
+                    }
+                </select>
+            </div>
+        </div>
+        <article class="content px-4">
+
+            @Body
+        </article>
+    </main>
+</div>
+
+@code {
+    private Dictionary<string, (string Name, string Icon)> availableLanguages = new();
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await I18n.EnsureInitializedAsync();
+
+            if (NavigationManager.Uri == NavigationManager.BaseUri)
+            {
+                NavigationManager.NavigateTo("/timeline");
+            }
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        availableLanguages = LocalizationService.GetAvailableLanguages();
+    }
+
+    private async Task ChangeLanguage(ChangeEventArgs e)
+    {
+        var newLanguage = e.Value.ToString();
+        if (!string.IsNullOrEmpty(newLanguage) && !I18n.IsCurrentLanguage(newLanguage))
+        {
+            await I18n.SetLanguageAsync(newLanguage);
+            StateHasChanged(); // reset ui after language change
+        }
+    }
+
+
+}

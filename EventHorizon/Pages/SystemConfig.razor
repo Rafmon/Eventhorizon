@@ -1,0 +1,152 @@
+﻿@page "/systemconfig"
+@inject NavigationManager NavigationManager
+@using EventHorizon.src.Events;
+@using EventHorizon.src.Util;
+@using Microsoft.AspNetCore.Components.Forms
+@inject IJSRuntime js
+@inject EventManager EventManager
+@inherits BaseComponent;
+@using EventHorizon.src.Ui;
+
+
+<h3>@I18n.Translate("SystemConfigurationTitle")</h3>
+
+<EditForm Model="@Settings" OnValidSubmit="@SaveSettings">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="row mb-3">
+        <label for="timelineDuration" class="col-sm-3 col-form-label">@I18n.Translate("TimelineDurationLabel")</label>
+        <div class="col-sm-2">
+            <InputNumber @bind-Value="TimelineDuration" class="form-control" id="timelineDuration" />
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <label for="simulateI2C" class="col-sm-3 col-form-label">@I18n.Translate("SimulateI2CLabel")</label>
+        <div class="col-sm-2">
+            <InputCheckbox @bind-Value="Settings.SimulateI2CDevices" class="form-check-input" id="simulateI2C" />
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-sm-3">
+            <button type="button" class="btn btn-primary" @onclick="ExportEvents">@I18n.Translate("ExportEventsButton")</button>
+
+            <label for="import files" class="col-sm-6 col-form-label">@I18n.Translate("ImportEventsLabel")</label>
+            <InputFile OnChange="StoreFileContent" />
+        </div>
+    </div>
+
+    <div class="row mb-3" style="display:@(isFileUploaded ? "block" : "none")">
+        <div class="col-sm-3">
+            <p>@uploadStatus</p>
+            <button type="button" class="btn btn-success" @onclick="ConfirmUpload" style="display:@(isUploadConfirmed ? "none" : "block")">@I18n.Translate("ConfirmUploadButton")</button>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-sm-2">
+            <button type="submit" class="btn btn-success">@I18n.Translate("SaveSettingsButton")</button>
+        </div>
+    </div>
+</EditForm>
+
+
+@code {
+    private int TimelineDuration = 180; // Example default value
+    private Settings Settings = Settings.getInstance();
+    private string? uploadedFileContent; // Temporarily store the uploaded file content
+    private bool isFileUploaded = false; // To track if file was uploaded
+    private bool isUploadConfirmed = false; // To track if the user confirmed the upload
+    private string uploadStatus = ""; // For progress feedback
+
+    private void SaveSettings()
+    {
+        // Save settings logic (e.g., writing to a file)
+        Console.WriteLine("Settings Saved");
+
+        // Write the uploaded file content to events.json if a file was uploaded
+        if (!string.IsNullOrEmpty(uploadedFileContent))
+        {
+            System.IO.File.WriteAllText("save/events.json", uploadedFileContent);
+            Console.WriteLine("Events imported successfully.");
+        }
+    }
+
+    private void ShutdownRaspberryPi()
+    {
+        try
+        {
+            var psi = new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = "/bin/bash",
+                    Arguments = "-c \"sudo shutdown -h now\"",
+                    RedirectStandardOutput = false,
+                    UseShellExecute = true,
+                    CreateNoWindow = true
+                };
+            System.Diagnostics.Process.Start(psi);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Error shutting down Raspberry Pi: " + ex.Message);
+        }
+    }
+
+    private async Task ExportEvents()
+    {
+        try
+        {
+            // Read the events.json file
+            var json = System.IO.File.ReadAllText("save/events.json");
+
+            // Invoke the JavaScript function to download the file
+            await js.InvokeVoidAsync("downloadFile", "events.json", json);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Error exporting events.json: " + ex.Message);
+        }
+    }
+
+    // Store the uploaded file content but do not save it yet
+    private async Task StoreFileContent(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+        if (file != null)
+        {
+            uploadStatus = "Hochladen ...";
+            StateHasChanged();
+
+            using var reader = new System.IO.StreamReader(file.OpenReadStream());
+            uploadedFileContent = await reader.ReadToEndAsync();
+
+            // File upload complete
+            uploadStatus = "Datei erfolgreich Hochgeladen!";
+            isFileUploaded = true;
+            StateHasChanged();
+        }
+    }
+
+    private void ConfirmUpload()
+    {
+        if (!string.IsNullOrEmpty(uploadedFileContent))
+        {
+            // Write to events.json and update EventManager
+            System.IO.File.WriteAllText("save/events.json", uploadedFileContent);
+
+            // Deserialize and load into EventManager
+            var newEvents = System.Text.Json.JsonSerializer.Deserialize<List<Event>>(uploadedFileContent);
+            if (newEvents != null)
+            {
+                EventManager.Events.Clear();
+                EventManager.Events.AddRange(newEvents);
+            }
+
+            isUploadConfirmed = true;
+            uploadStatus = "Events wurden erfolgreich geladen!";
+            StateHasChanged();
+        }
+    }
+}

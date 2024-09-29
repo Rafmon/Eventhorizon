@@ -1,0 +1,18 @@
+services:
+  eventhorizon:
+    image: ${DOCKER_REGISTRY-}eventhorizon
+    ports:
+      - "80:80" # Externer Port 80 zu internem Port 80
+    #devices:
+      #- "/dev/gpiomem:/dev/gpiomem" # Ger�t f�r GPIO Zugriff
+    #volumes:
+      #- "/sys/class/gpio:/sys/class/gpio" # F�r GPIO Steuerung
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Release" # Setzt die Umgebungsvariable, falls ben�tigt
+    restart: always
+    cap_add:
+      - SYS_RAWIO # F�gt erweiterte Berechtigungen hinzu, die GPIO erfordern
+
+    build:
+      context: EventHorizon
+      dockerfile: Dockerfile

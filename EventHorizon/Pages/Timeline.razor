@@ -1,0 +1,67 @@
+﻿@inject NavigationManager uriHelper;
+@using EventHorizon.src.TimeLine;
+@using EventHorizon.src.Ui;
+@using EventHorizon.src.Util;
+@inject TimeLineController TimeLineController
+@inherits BaseComponent;
+
+@page "/timeline"
+
+<h3>Timeline</h3>
+
+
+@I18n.Translate("TimelineCurrentProgress",@TimeLineController.currentTime,@TimeLineController.Duration)
+<br><progress id="file" max="@TimeLineController.Duration" value="@TimeLineController.currentTime"></progress>
+
+
+@if (HasEvents())
+{            @I18n.Translate("TimelineNextEvent",@GetNextEventName(), @GetRemainingTimeToNextEvent())  
+   }
+else
+{
+    @I18n.Translate("TimelineNoEvents")
+}
+
+
+@code {
+
+    String GetNextEventName()
+    {
+        TimeLineEvent te = TimeLineController.TimeLineEvents.Peek();
+        return te.IsActive ? I18n.Translate("TimelineEventOn") : I18n.Translate("TimelineEventOff") + " " + te.Name;
+    }
+
+    String GetRemainingTimeToNextEvent()
+    {
+
+        return $"{TimeLineController.TimeLineEvents.Peek().ExecutionTime - TimeLineController.currentTime}";
+
+    }
+
+    bool HasEvents()
+    {
+        return TimeLineController.TimeLineEvents.Count > 0;
+    }
+
+
+
+
+
+    PeriodicTimer? periodicTimer;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await I18n.EnsureInitializedAsync();
+        periodicTimer = new PeriodicTimer(TimeSpan.FromMilliseconds(1000));
+        await RunTimeLineAsync();
+    }
+
+    public async Task RunTimeLineAsync()
+    {
+        await I18n.EnsureInitializedAsync();
+        while (periodicTimer != null && await periodicTimer.WaitForNextTickAsync())
+        {
+            StateHasChanged();
+        }
+    }
+}

@@ -1,0 +1,46 @@
+﻿@using System.Globalization
+@inherits InputBase<TimeOnly>
+
+<input @attributes="AdditionalAttributes"
+       type="time"
+       class="@CssClass"
+       value="@CurrentValueAsString"
+@oninput="OnInput" />
+
+@code {
+    protected override string FormatValueAsString(TimeOnly value)
+    {
+        // Format the TimeOnly value as HH:mm
+        return value.ToString("HH\\:mm", CultureInfo.InvariantCulture);
+    }
+
+    private void OnInput(ChangeEventArgs e)
+    {
+        var value = e.Value?.ToString();
+        if (TimeOnly.TryParseExact(value, "HH\\:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out var time))
+        {
+            CurrentValue = time;
+        }
+        else
+        {
+            // Handle invalid input
+            CurrentValue = default;
+        }
+    }
+
+    protected override bool TryParseValueFromString(string value, out TimeOnly result, out string validationErrorMessage)
+    {
+        if (TimeOnly.TryParseExact(value, "HH\\:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out var time))
+        {
+            result = time;
+            validationErrorMessage = "";
+            return true;
+        }
+        else
+        {
+            result = default;
+            validationErrorMessage = "Invalid time format.";
+            return false;
+        }
+    }
+}

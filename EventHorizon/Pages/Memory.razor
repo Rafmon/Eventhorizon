@@ -1,0 +1,72 @@
+﻿@page "/memory"
+@using System.Threading;
+@using EventHorizon.src.Util;
+@inject MemoryController MemoryController
+@inherits BaseComponent;
+@using EventHorizon.src.Ui;
+
+<h3>@I18n.Translate("MemoryTitle")</h3>
+
+<ul>
+    @foreach (MemoryAddress memoryAddress in MemoryController.GetMemoryAddresses())
+    {
+        <li>
+
+            <!-- Checkbox für Aktiv/Inaktiv -->
+            <label class="switch">
+                <input type="checkbox" @bind="memoryAddress.IsActive" @onclick="() => memoryAddress.Update(memoryAddress.IsActive)">
+                <span class="slider round"></span>
+            </label>
+
+            <!-- Umschaltbare Ansicht: Label oder InputText -->
+            @if (memoryAddress.IsEditing)
+            {
+                <InputText @bind-Value="memoryAddress.Name" @onblur="() => SaveName(memoryAddress)" />
+            }
+            else
+            {
+                <span @onclick="() => EditName(memoryAddress)">@memoryAddress.Name</span>
+            }
+
+
+
+            @memoryAddress.Address
+        </li>
+
+    }
+</ul>
+
+
+@functions {
+    PeriodicTimer? periodicTimer;
+
+    protected override async Task OnInitializedAsync()
+    {
+        periodicTimer = new PeriodicTimer(TimeSpan.FromMilliseconds(1000));
+        await RunTimeLineAsync();
+    }
+
+    public async Task RunTimeLineAsync()
+    {
+        while (periodicTimer != null && await periodicTimer.WaitForNextTickAsync())
+        {
+            StateHasChanged();
+        }
+    }
+
+    public override void Dispose()
+    {
+        base.Dispose();
+        periodicTimer = null;
+    }
+
+    private void EditName(MemoryAddress memoryAddress)
+    {
+        memoryAddress.IsEditing = true;
+    }
+
+    private void SaveName(MemoryAddress memoryAddress)
+    {
+        memoryAddress.IsEditing = false;
+    }
+}
