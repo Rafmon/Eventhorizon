@@ -27,7 +27,7 @@ jobs:
 
       - name: Build Docker Image
         run: |
-          docker build -f ./Dockerfile --build-arg PLATFORM=${{ matrix.platform }} -t ghcr.io/rafmon/eventhorizon:${{ matrix.platform }} .
+          docker build -f ./Dockerfile.rpi --build-arg PLATFORM=${{ matrix.platform }} -t ghcr.io/rafmon/eventhorizon:${{ matrix.platform }} .
 
       - name: Push Docker Image
         run: |
