@@ -1,4 +1,4 @@
-name: Build and Push Docker Images to GHCR
+name: Build and Push Docker Image for Linux64
 
 on:
   push:
