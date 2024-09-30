@@ -28,12 +28,12 @@ jobs:
         run: |
           dotnet publish ./EventHorizon/EventHorizon.csproj -c Release -r ${{ matrix.platform }} --self-contained false -o ./publish/${{ matrix.platform }}
         
-      # Build and push Docker image
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v4
-        with:
-          context: ./EventHorizon # Pointing to the EventHorizon folder
-          file: ./EventHorizon/Dockerfile # Specify the Dockerfile inside the EventHorizon folder
-          platforms: ${{ matrix.platform }}
-          push: true
-          tags: ghcr.io/rafmon/eventhorizon:latest
+      # Build Docker Image
+      - name: Build Docker Image
+        run: |
+          docker build -f ./EventHorizon/Dockerfile -t ghcr.io/rafmon/eventhorizon:${{ matrix.platform }} .
+      
+      # Push Docker Image
+      - name: Push Docker Image
+        run: |
+          docker push ghcr.io/rafmon/eventhorizon:${{ matrix.platform }}
