@@ -7,7 +7,7 @@ on:
 
 jobs:
   build-and-push:
-    runs-on: ubuntu-latest  # Nutze einen Linux-Runner anstelle von Windows
+    runs-on: ubuntu-latest  
 
     strategy:
       matrix:
