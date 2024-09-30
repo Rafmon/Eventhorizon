@@ -7,13 +7,13 @@ on:
 
 jobs:
   build-and-push:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest  # Nutze einen Linux-Runner anstelle von Windows
+
     strategy:
       matrix:
         platform: [linux-arm, linux-arm64]
 
     steps:
-      # Checkout the code
       - name: Checkout code
         uses: actions/checkout@v3
 
