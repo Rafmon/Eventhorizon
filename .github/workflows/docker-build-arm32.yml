@@ -27,7 +27,14 @@ jobs:
       - name: Build for ${{ matrix.platform }}
         run: |
           dotnet publish ./EventHorizon/EventHorizon.csproj -c Release -r ${{ matrix.platform }} --self-contained false -o ./publish/${{ matrix.platform }}
-        
+             # Log in to GitHub Container Registry
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}  # GitHub actor
+          password: ${{ secrets.GHCR_PAT }}  # GitHub PAT secret 
+
       # Build Docker Image
       - name: Build Docker Image
         run: |

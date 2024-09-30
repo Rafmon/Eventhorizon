@@ -33,8 +33,6 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
         with:
-          context: ./EventHorizon # Pointing to the EventHorizon folder
-          file: ./EventHorizon/Dockerfile # Specify the Dockerfile inside the EventHorizon folder
           platforms: ${{ matrix.platform }}
           push: true
           tags: ghcr.io/rafmon/eventhorizon:latest
