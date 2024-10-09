@@ -8,29 +8,29 @@
 <h3>@I18n.Translate("MemoryTitle")</h3>
 
 <ul>
-    @foreach (MemoryAddress memoryAddress in MemoryController.GetMemoryAddresses())
+    @foreach (var memoryAddressEntry in MemoryController.GetMemoryAddresses())
     {
         <li>
 
-            <!-- Checkbox für Aktiv/Inaktiv -->
+            <!-- checkbox for active/inactive -->
             <label class="switch">
-                <input type="checkbox" @bind="memoryAddress.IsActive" @onclick="() => memoryAddress.Update(memoryAddress.IsActive)">
+                <input type="checkbox" @bind="memoryAddressEntry.Value.IsActive" @onclick="() => memoryAddressEntry.Value.Update(memoryAddressEntry.Value.IsActive)">
                 <span class="slider round"></span>
             </label>
 
-            <!-- Umschaltbare Ansicht: Label oder InputText -->
-            @if (memoryAddress.IsEditing)
+            <!-- switchable view for editing: label or inputtext -->
+            @if (memoryAddressEntry.Value.IsEditing)
             {
-                <InputText @bind-Value="memoryAddress.Name" @onblur="() => SaveName(memoryAddress)" />
+                <InputText @bind-Value="memoryAddressEntry.Value.Name" @onblur="() => SaveName(memoryAddressEntry.Value)" />
             }
             else
             {
-                <span @onclick="() => EditName(memoryAddress)">@memoryAddress.Name</span>
+                <span @onclick="() => EditName(memoryAddressEntry.Value)">@memoryAddressEntry.Value.Name</span>
             }
 
 
 
-            @memoryAddress.Address
+            &nbsp;&nbsp;&nbsp;@memoryAddressEntry.Value.Address listId: @memoryAddressEntry.Key
         </li>
 
     }
@@ -39,7 +39,7 @@
 
 @functions {
     PeriodicTimer? periodicTimer;
-
+    String MemoryAddressOldName = String.Empty;
     protected override async Task OnInitializedAsync()
     {
         periodicTimer = new PeriodicTimer(TimeSpan.FromMilliseconds(1000));
@@ -63,10 +63,20 @@
     private void EditName(MemoryAddress memoryAddress)
     {
         memoryAddress.IsEditing = true;
+        MemoryAddressOldName = memoryAddress.Name;
     }
 
     private void SaveName(MemoryAddress memoryAddress)
     {
         memoryAddress.IsEditing = false;
+        if (!string.IsNullOrEmpty(memoryAddress.Name) && !MemoryAddressOldName.Equals(memoryAddress.Name))
+        {
+            MemoryController.SaveMemoryAddress(memoryAddress.Address);
+        }
+        else
+        {
+            memoryAddress.Name = MemoryAddressOldName;
+        }
+        MemoryAddressOldName = string.Empty;
     }
 }

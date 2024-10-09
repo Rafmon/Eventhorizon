@@ -17,7 +17,11 @@ namespace EventHorizon.src.Events
         public bool IsEventEndRandom { get; set; } = false;
         public TimeOnly EventStartOffset { get; set; }
         public TimeOnly EventEndOffset { get; set; }
+        
+        [Required]
         public int Address { get; set; }
+        
+        [Key]
         public Guid ID { get; set; }
 
         public Event()

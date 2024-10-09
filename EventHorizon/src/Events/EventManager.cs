@@ -1,21 +1,28 @@
 ﻿using System.Collections;
 using EventHorizon.src.Util;
+using Microsoft.EntityFrameworkCore;
+using static System.Formats.Asn1.AsnWriter;
 
 namespace EventHorizon.src.Events
 {
 	public class EventManager
 	{
-		public List<Event> Events { get;}
-            
-		public EventManager()
+		public List<Event> Events { get; }
+        private readonly IServiceScopeFactory _scopeFactory;
+
+
+        public EventManager(IServiceScopeFactory scopeFactory)
 		{
-            Console.WriteLine("init EventManager");
-            Events = SaveManager.LoadEvents();
+            _scopeFactory = scopeFactory; 
+            using (var scope = _scopeFactory.CreateScope())
+            {
+                var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                Events = dbContext.Events.ToList();  
+            }
             if (Events.Count <= 0 )
 			{
 				CreateSomeEvents();
 			}
-            Console.WriteLine("Done init EventManager");
         }
 
         private void CreateSomeEvents()
@@ -145,7 +152,12 @@ namespace EventHorizon.src.Events
             if (e == null) return;
 
             Events.Remove(e);
-            SaveManager.SaveEvents(Events);
+            using (var scope = _scopeFactory.CreateScope())
+            {
+                var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                dbContext.Events.Add(e);
+                dbContext.SaveChanges();
+            }
         }
 
         public void AddEvent(Event e)
@@ -153,7 +165,12 @@ namespace EventHorizon.src.Events
             if (e == null) return;
 
             Events.Add(e);
-            SaveManager.SaveEvents(Events);
+            using (var scope = _scopeFactory.CreateScope())
+            {
+                var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                dbContext.Events.Remove(e);
+                dbContext.SaveChanges();
+            }
         }
 
 
