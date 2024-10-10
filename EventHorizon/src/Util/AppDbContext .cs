@@ -9,6 +9,7 @@ public class AppDbContext : DbContext
     public AppDbContext(DbContextOptions<AppDbContext> options)
         : base(options)
     {
+        TriggerWalCheckpoint();
     }
 
     protected override void OnModelCreating(ModelBuilder builder)
@@ -22,5 +23,11 @@ public class AppDbContext : DbContext
         builder.Entity<MemoryAddress>()
             .Property(ma => ma.Address)
             .ValueGeneratedNever(); // Prevent auto-increment for Address
+    }
+
+    private void TriggerWalCheckpoint()
+    {
+        // Use raw SQL to trigger the WAL checkpoint honestly proably not really nessecary 
+        this.Database.ExecuteSqlRaw("PRAGMA wal_checkpoint(FULL);");
     }
 }
