@@ -27,7 +27,7 @@ public class AppDbContext : DbContext
 
     private void TriggerWalCheckpoint()
     {
-        // Use raw SQL to trigger the WAL checkpoint honestly proably not really nessecary 
+        // Use raw SQL to trigger the WAL checkpoint honestly proably not really necessary 
         this.Database.ExecuteSqlRaw("PRAGMA wal_checkpoint(FULL);");
     }
 }
