@@ -1,23 +1,26 @@
 ﻿using EventHorizon.src.Events;
 using EventHorizon.src.TimeLine;
+using EventHorizon.src.Util;
 
 public class TimeLineController
 {
     private readonly EventManager _eventManager;
     private readonly MemoryController _memoryController;
+    private readonly SettingsManager _settingsManager;
     public Stack<TimeLineEvent> TimeLineEvents { get; set; }
     List<TimeLineEvent> UpcomingTimeLineEvents { get; set; }
     public int Duration { get; set; }
     public int currentTime = 0;
     public TimeLinePlayState CurrentPlayState { get; private set; } = TimeLinePlayState.Play;
 
-    public TimeLineController(EventManager eventManager, MemoryController memoryController)
+    public TimeLineController(EventManager eventManager, MemoryController memoryController, SettingsManager settingsManager)
     {
-        _eventManager = eventManager ?? throw new ArgumentNullException(nameof(eventManager));
+        _eventManager = eventManager;
+        _settingsManager = settingsManager;
         _memoryController = memoryController;
         Console.WriteLine("init TimeLineController");
 
-        Duration = 180;
+        Duration = _settingsManager.TimelineDuration;
         CurrentPlayState = TimeLinePlayState.Play;
 
         TimeLineEvents = new Stack<TimeLineEvent>();
@@ -102,6 +105,13 @@ public class TimeLineController
         UpcomingTimeLineEvents = new List<TimeLineEvent>();
         GenerateTimeLine();
         currentTime = 0;
+    }
+
+    public void CompleteReset()
+    {
+        Duration = _settingsManager.TimelineDuration;
+        GenerateTimeLine();//generating the first set of Events so that the old set of precalculated Events also Regenerated.
+        Reset();
     }
 
     public void SetPlayState(TimeLinePlayState playState)

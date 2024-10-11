@@ -11,6 +11,7 @@ builder.Services.AddHttpClient();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite("Data Source=data/app.db"));
 builder.Services.AddSingleton<MemoryController>();
+builder.Services.AddSingleton<SettingsManager>();
 builder.Services.AddSingleton<EventManager>();
 builder.Services.AddSingleton<TimeLineController>();
 builder.Services.AddHostedService<TimeLineBackgroundService>();

@@ -1,5 +1,4 @@
 ﻿using EventHorizon.src.Memory;
-using EventHorizon;
 using Iot.Device.Mcp23xxx;
 using System.Collections;
 using System.Device.I2c;
@@ -7,16 +6,19 @@ using System.Runtime.InteropServices;
 using static System.Formats.Asn1.AsnWriter;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using EventHorizon.src.Util;
 
 public class MemoryController
 {
     private Dictionary<int,MemoryAddress> Addresses;
     private readonly IServiceScopeFactory _scopeFactory;
+    private readonly SettingsManager _settings;
 
-    public MemoryController(IServiceScopeFactory scopeFactory)
+    public MemoryController(IServiceScopeFactory scopeFactory, SettingsManager settings)
     {
         Console.WriteLine("Starting Memory");
         _scopeFactory = scopeFactory;
+        _settings = settings;
 
         Addresses = new Dictionary<int, MemoryAddress>(128);
 
@@ -25,7 +27,7 @@ public class MemoryController
             RuntimeInformation.ProcessArchitecture == Architecture.Arm64)))
         {
             Console.WriteLine("GPIO/I2C not supported on this platform. Simulating devices...");
-            Settings.getInstance().SimulateI2CDevices = true;
+            _settings.SimulateI2CDevices = true;
         }
         genrateAddresses();
 
@@ -51,7 +53,7 @@ public class MemoryController
             catch (Exception ex)
             {
                 Console.WriteLine($"Error initializing I2C device at address {32 + i}: {ex.Message}");
-                if (Settings.getInstance().SimulateI2CDevices)
+                if (_settings.SimulateI2CDevices)
                 {
                     Console.WriteLine("Creating dummy device for address " + (32 + i));
                     generateMemoryAddr(i, new MemoryDeviceDummy());

@@ -5,6 +5,7 @@
 @using Microsoft.AspNetCore.Components.Forms
 @inject IJSRuntime js
 @inject EventManager EventManager
+@inject SettingsManager Settings
 @inherits BaseComponent;
 @using EventHorizon.src.Ui;
 
@@ -18,33 +19,32 @@
     <div class="row mb-3">
         <label for="timelineDuration" class="col-sm-3 col-form-label">@I18n.Translate("TimelineDurationLabel")</label>
         <div class="col-sm-2">
-            <InputNumber @bind-Value="TimelineDuration" class="form-control" id="timelineDuration" />
+            <InputNumber @bind-Value="Settings.TimelineDuration" class="form-control" id="timelineDuration" />
         </div>
     </div>
-
+    <br />
     <div class="row mb-3">
         <label for="simulateI2C" class="col-sm-3 col-form-label">@I18n.Translate("SimulateI2CLabel")</label>
         <div class="col-sm-2">
             <InputCheckbox @bind-Value="Settings.SimulateI2CDevices" class="form-check-input" id="simulateI2C" />
         </div>
     </div>
-
+    <br />
     <div class="row mb-3">
         <div class="col-sm-3">
             <button type="button" class="btn btn-primary" @onclick="ExportEvents">@I18n.Translate("ExportEventsButton")</button>
-
-            <label for="import files" class="col-sm-6 col-form-label">@I18n.Translate("ImportEventsLabel")</label>
-            <InputFile OnChange="StoreFileContent" />
+            <br />
+            <label for="import files" class="col-sm-6 col-form-label">@I18n.Translate("ImportEventsLabel")</label> <InputFile OnChange="StoreFileContent" />
         </div>
     </div>
-
+    <br />
     <div class="row mb-3" style="display:@(isFileUploaded ? "block" : "none")">
         <div class="col-sm-3">
             <p>@uploadStatus</p>
-            <button type="button" class="btn btn-success" @onclick="ConfirmUpload" style="display:@(isUploadConfirmed ? "none" : "block")">@I18n.Translate("ConfirmUploadButton")</button>
+        <button type="button" class="btn btn-success" @onclick="ConfirmUpload" style="display:@GetButtonDisplayStyle()">@I18n.Translate("ConfirmUploadButton")</button>
         </div>
     </div>
-
+    <br />
     <div class="row mb-3">
         <div class="col-sm-2">
             <button type="submit" class="btn btn-success">@I18n.Translate("SaveSettingsButton")</button>
@@ -54,8 +54,6 @@
 
 
 @code {
-    private int TimelineDuration = 180; // Example default value
-    private Settings Settings = Settings.getInstance();
     private string? uploadedFileContent; // Temporarily store the uploaded file content
     private bool isFileUploaded = false; // To track if file was uploaded
     private bool isUploadConfirmed = false; // To track if the user confirmed the upload
@@ -63,15 +61,14 @@
 
     private void SaveSettings()
     {
-        // Save settings logic (e.g., writing to a file)
-        Console.WriteLine("Settings Saved");
-
+        Settings.SaveSettings();
         // Write the uploaded file content to events.json if a file was uploaded
         if (!string.IsNullOrEmpty(uploadedFileContent))
         {
-            System.IO.File.WriteAllText("save/events.json", uploadedFileContent);
-            Console.WriteLine("Events imported successfully.");
+            EventManager.ImportEventsFromJson(uploadedFileContent);
         }
+        // Save settings logic (e.g., writing to a file)
+        Console.WriteLine("Settings Saved");
     }
 
     private void ShutdownRaspberryPi()
@@ -148,5 +145,10 @@
             uploadStatus = "Events wurden erfolgreich geladen!";
             StateHasChanged();
         }
+    }
+
+    private string GetButtonDisplayStyle()
+    {
+        return isUploadConfirmed ? "none" : "block";
     }
 }
