@@ -406,3 +406,6 @@ ASALocalRun/
 
 # saves
 save/
+*.db
+*.db-shm
+*.db-wal

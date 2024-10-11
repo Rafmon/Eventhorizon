@@ -4,8 +4,14 @@ services:
     ports:
       - "80:80"
     environment:
-      ASPNETCORE_ENVIRONMENT: "Release"
+      ASPNETCORE_ENVIRONMENT: "Development"
     restart: always
     build:
       context: .
       dockerfile: ./EventHorizon/Dockerfile
+    volumes:
+      - sqlite_data:/app/data
+
+volumes:
+  sqlite_data:
+    driver: local
