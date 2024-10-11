@@ -20,23 +20,14 @@
       "dotnetRunMessages": true,
       "applicationUrl": "https://localhost:443/"
     },
-
-
-    "Docker Compose": {
-      "commandName": "DockerCompose",
-      "commandVersion": "1.0",
-      "serviceActions": {
-        "eventhorizon": "StartDebugging"
-      }
-    },
-
-
-    "iisSettings": {
-      "windowsAuthentication": false,
-      "anonymousAuthentication": true,
-      "iisExpress": {
-        "applicationUrl": "http://localhost:50595/",
-        "sslPort": 44316
-      }
+    "Docker": {
+      "commandName": "Docker",
+      "launchBrowser": true,
+      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "publishAllPorts": true
     }
   }
+}
