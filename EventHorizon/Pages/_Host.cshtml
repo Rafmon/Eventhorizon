@@ -46,15 +46,12 @@
 
         document.body.removeChild(element);
     }
-</script>
 
-<script>
     function setLanguageCookie(language) {
         var expireDate = new Date();
         expireDate.setFullYear(expireDate.getFullYear() + 50); 
         document.cookie = "language=" + language + "; expires=" + expireDate.toUTCString() + "; path=/; SameSite=None; Secure";
     }
-
 
     function getLanguageCookie() {
         const value = `; ${document.cookie}`;
