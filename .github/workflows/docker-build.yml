@@ -30,7 +30,7 @@ jobs:
       - name: Build for amd64
         run: |
           dotnet publish ./EventHorizon/EventHorizon.csproj -c Release -r linux-x64 --self-contained false -o ./publish/linux/amd64
-          docker buildx build --platform linux/amd64 -f ./EventHorizon/Dockerfile -t ghcr.io/rafmon/eventhorizon:linux-amd64 --push .
+          docker buildx build --platform linux/amd64 -f ./EventHorizon/Dockerfile.amr64 -t ghcr.io/rafmon/eventhorizon:linux-amd64 --push .
 
   build-armv7:
     runs-on: ubuntu-latest
@@ -53,7 +53,7 @@ jobs:
       - name: Build for arm/v7
         run: |
           dotnet publish ./EventHorizon/EventHorizon.csproj -c Release -r linux-arm --self-contained false -o ./publish/linux/arm/v7
-          docker buildx build --platform linux/arm/v7 -f ./EventHorizon/Dockerfile -t ghcr.io/rafmon/eventhorizon:linux-arm --push .
+          docker buildx build --platform linux/arm/v7 -f ./EventHorizon/Dockerfile.armv7 -t ghcr.io/rafmon/eventhorizon:linux-arm --push .
 
   build-arm64:
     runs-on: ubuntu-latest
