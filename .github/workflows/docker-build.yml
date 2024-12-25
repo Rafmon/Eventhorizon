@@ -14,7 +14,17 @@ jobs:
 
     strategy:
       matrix:
-        platform: [linux-arm, linux-arm64, linux-amd64]
+        platform: 
+          - linux/amd64
+          - linux/arm/v7
+          - linux/arm64
+        include:
+          - platform: linux/amd64
+            docker_platform: linux-amd64
+          - platform: linux/arm/v7
+            docker_platform: linux-arm
+          - platform: linux/arm64
+            docker_platform: linux-arm64
 
     steps:
       - name: Checkout code
@@ -29,41 +39,36 @@ jobs:
       # Build for each platform
       - name: Build for ${{ matrix.platform }}
         run: |
-          dotnet publish ./EventHorizon/EventHorizon.csproj -c Release -r ${{ matrix.platform }} --self-contained false -o ./publish/${{ matrix.platform }}
+          dotnet publish ./EventHorizon/EventHorizon.csproj -c Release -r ${{ matrix.docker_platform[matrix.platform] }} --self-contained false -o ./publish/${{ matrix.platform }}
       
       # Log in to GitHub Container Registry
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
-          username: ${{ github.actor }}  # GitHub actor
-          password: ${{ secrets.GHCR_PAT }}  # GitHub PAT secret 
+          username: ${{ github.actor }}  
+          password: ${{ secrets.GHCR_PAT }}
 
       # Build Docker Image
       - name: Build Docker Image
         run: |
-          docker buildx build --platform ${{ matrix.platform }} -f ./EventHorizon/Dockerfile -t ghcr.io/rafmon/eventhorizon:${{ matrix.platform }} .
-      
-      # Push Docker Image
-      - name: Push Docker Image
-        run: |
-          docker push ghcr.io/rafmon/eventhorizon:${{ matrix.platform }}
+          docker buildx build --platform ${{ matrix.platform }} -f ./EventHorizon/Dockerfile -t ghcr.io/rafmon/eventhorizon:${{ matrix.platform }} --push .
 
-  create-and-push-manifest:
-    runs-on: ubuntu-latest
-    needs: build-and-push
-    steps:
-      - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GHCR_PAT }}
-
-      - name: Create and push multi-arch manifest
-        run: |
-          docker manifest create ghcr.io/rafmon/eventhorizon:latest \
-            --amend ghcr.io/rafmon/eventhorizon:linux-amd64 \
-            --amend ghcr.io/rafmon/eventhorizon:linux-arm64 \
-            --amend ghcr.io/rafmon/eventhorizon:linux-arm
-          docker manifest push ghcr.io/rafmon/eventhorizon:latest
+          create-and-push-manifest:
+            runs-on: ubuntu-latest
+            needs: build-and-push
+            steps:
+              - name: Log in to GitHub Container Registry
+                uses: docker/login-action@v3
+                with:
+                  registry: ghcr.io
+                  username: ${{ github.actor }}
+                  password: ${{ secrets.GHCR_PAT }}
+        
+              - name: Create and push multi-arch manifest
+                run: |
+                  docker manifest create ghcr.io/rafmon/eventhorizon:latest \
+                    --amend ghcr.io/rafmon/eventhorizon:linux-amd64 \
+                    --amend ghcr.io/rafmon/eventhorizon:linux-arm64 \
+                    --amend ghcr.io/rafmon/eventhorizon:linux-arm
+                  docker manifest push ghcr.io/rafmon/eventhorizon:latest
