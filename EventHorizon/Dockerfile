@@ -7,7 +7,7 @@ EXPOSE 80
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 COPY ["EventHorizon/EventHorizon.csproj", "EventHorizon/"]
-RUN dotnet restore "EventHorizon/EventHorizon.csproj"
+RUN dotnet restore "EventHorizon/EventHorizon.csproj" --verbosity detailed
 COPY . .
 WORKDIR /src/EventHorizon
 RUN dotnet build "EventHorizon.csproj" -c Release -o /app/build

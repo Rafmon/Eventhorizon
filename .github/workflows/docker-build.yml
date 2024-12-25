@@ -30,6 +30,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Print system info
+        run: uname -a
+
       # Setup .NET SDK
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
@@ -52,6 +55,7 @@ jobs:
       # Build Docker Image
       - name: Build Docker Image
         run: |
+          docker buildx inspect
           docker buildx build --platform ${{ matrix.platform }} -f ./EventHorizon/Dockerfile -t ghcr.io/rafmon/eventhorizon:${{ matrix.runtime_identifier }} --push .
 
   create-and-push-manifest:
