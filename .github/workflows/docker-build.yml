@@ -1,46 +1,62 @@
-name: Build and Push Multi-Platform Docker Images
+name: Build and Push Docker Image
 
 on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
-  build-and-push:
-    runs-on: ubuntu-latest  
-
-    strategy:
-      matrix:
-        platform: [linux-arm, linux-arm64, linux-amd64]
+  build:
+    runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+    - name: Checkout repository
+      uses: actions/checkout@v2
 
-      # Setup .NET SDK
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: '8.0.x'
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
 
-      # Build for each platform
-      - name: Build for ${{ matrix.platform }}
-        run: |
-          dotnet publish ./EventHorizon/EventHorizon.csproj -c Release -r ${{ matrix.platform }} --self-contained false -o ./publish/${{ matrix.platform }}
-             # Log in to GitHub Container Registry
-      - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}  # GitHub actor
-          password: ${{ secrets.GHCR_PAT }}  # GitHub PAT secret 
+    - name: Log in to GitHub Container Registry
+      uses: docker/login-action@v2
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
 
-      # Build Docker Image
-      - name: Build Docker Image
-        run: |
-          docker build -f ./EventHorizon/Dockerfile -t ghcr.io/rafmon/eventhorizon:${{ matrix.platform }} .
-      
-      # Push Docker Image
-      - name: Push Docker Image
-        run: |
-          docker push ghcr.io/rafmon/eventhorizon:${{ matrix.platform }}
+    - name: Build and push Docker image for amd64
+      uses: docker/build-push-action@v4
+      with:
+        context: .
+        file: ./EventHorizon/Dockerfile
+        platforms: linux/amd64
+        push: true
+        tags: ghcr.io/rafmon/eventhorizon:amd64-latest
+
+    - name: Build and push Docker image for arm64
+      uses: docker/build-push-action@v4
+      with:
+        context: .
+        file: ./EventHorizon/Dockerfile
+        platforms: linux/arm64
+        push: true
+        tags: ghcr.io/rafmon/eventhorizon:arm64-latest
+
+    - name: Build and push Docker image for arm/v7
+      uses: docker/build-push-action@v4
+      with:
+        context: .
+        file: ./EventHorizon/Dockerfile
+        platforms: linux/arm/v7
+        push: true
+        tags: ghcr.io/rafmon/eventhorizon:armv7-latest
+
+    - name: Create and push multi-arch manifest
+      run: |
+        docker manifest create ghcr.io/rafmon/eventhorizon:latest \
+          --amend ghcr.io/rafmon/eventhorizon:amd64-latest \
+          --amend ghcr.io/rafmon/eventhorizon:arm64-latest \
+          --amend ghcr.io/rafmon/eventhorizon:armv7-latest
+        docker manifest push ghcr.io/rafmon/eventhorizon:latest

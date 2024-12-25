@@ -1,16 +1,14 @@
 services:
   eventhorizon:
-    image: ${DOCKER_REGISTRY-}eventhorizon
+    image: ghcr.io/rafmon/eventhorizon:latest
     ports:
       - "80:80"
     environment:
       ASPNETCORE_ENVIRONMENT: "Development"
     restart: always
-    build:
-      context: .
-      dockerfile: ./EventHorizon/Dockerfile
     volumes:
       - sqlite_data:/app/data
+      - ./logs:/app/logs
 
 volumes:
   sqlite_data:
