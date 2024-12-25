@@ -4,7 +4,7 @@ WORKDIR /app
 EXPOSE 80
 
 # Use SDK image for build steps
-FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 COPY ["EventHorizon/EventHorizon.csproj", "EventHorizon/"]
 RUN dotnet restore "EventHorizon/EventHorizon.csproj"
