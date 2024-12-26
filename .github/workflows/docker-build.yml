@@ -62,7 +62,7 @@ jobs:
       - name: Build for arm/v7
         run: |
           dotnet publish ./EventHorizon/EventHorizon.csproj -c Release -r linux-arm --self-contained false -o ./publish/linux/arm/v7
-          docker buildx build --platform linux/arm/v7 -f ./EventHorizon/Dockerfile.arm32 -t ghcr.io/rafmon/eventhorizon:linux-arm --push .
+          docker buildx build --platform linux/arm/v7 -f ./EventHorizon/Dockerfile.armv7 -t ghcr.io/rafmon/eventhorizon:linux-arm --push .
 
   build-arm64:
     runs-on: ubuntu-latest
