@@ -1,6 +1,6 @@
 services:
   eventhorizon:
-    image: ghcr.io/rafmon/eventhorizon:latest
+    image: ghcr.io/rafmon/eventhorizon:linux-arm64 
     ports:
       - "80:80"
     environment:
@@ -8,7 +8,9 @@ services:
     restart: always
     volumes:
       - sqlite_data:/app/data
-      - ./logs:/app/logs
+      - ./logs:/app/log
+    devices:
+      - "/dev/i2c-1:/dev/i2c-1"   
 
 volumes:
   sqlite_data:
