@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/aspnet:8.0-arm32v7 AS base
+FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine-arm32v7 AS base
 WORKDIR /app
 EXPOSE 80
 
