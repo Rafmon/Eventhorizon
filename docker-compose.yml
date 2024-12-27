@@ -1,3 +1,4 @@
+#for dev purpose
 services:
   eventhorizon:
     image: ${DOCKER_REGISTRY-}eventhorizon:linux-x64
