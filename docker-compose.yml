@@ -1,6 +1,6 @@
 services:
   eventhorizon:
-    image: ${DOCKER_REGISTRY-}eventhorizon:latest
+    image: ${DOCKER_REGISTRY-}eventhorizon:linux-x64
     ports:
       - "80:80"
     environment:
