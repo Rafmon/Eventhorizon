@@ -3,6 +3,8 @@
     "Docker Compose": {
       "commandName": "DockerCompose",
       "commandVersion": "1.0",
+      "composeFilePaths": ["docker-compose-dev.yml"
+      ],
       "serviceActions": {
         "eventhorizon": "StartDebugging"
       }
