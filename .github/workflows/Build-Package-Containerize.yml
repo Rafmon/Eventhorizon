@@ -51,7 +51,7 @@ jobs:
             --platform ${{ matrix.platform }} \
             --build-arg PLATFORM=${{ matrix.runtime }} \
             -f ./EventHorizon/Dockerfile \
-            -t ghcr.io/rafmon/eventhorizon:${{ matrix.runtime }} \
+            -t ghcr.io/rafmon/eventhorizon:${{ matrix.platform }} \
             --push .
   
   create-and-push-manifest:
@@ -65,11 +65,10 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GHCR_PAT }}
     
-      - name: Create and push multi-arch manifest
+      - name: Create and Push Multi-Arch Manifest
         run: |
           docker manifest create ghcr.io/rafmon/eventhorizon:latest \
-            --amend ghcr.io/rafmon/eventhorizon:linux-amd64 \
-            --amend ghcr.io/rafmon/eventhorizon:linux-arm64 \
-            --amend ghcr.io/rafmon/eventhorizon:linux-arm
+            --amend ghcr.io/rafmon/eventhorizon:linux/amd64 \
+            --amend ghcr.io/rafmon/eventhorizon:linux/arm64 \
+            --amend ghcr.io/rafmon/eventhorizon:linux/arm
           docker manifest push ghcr.io/rafmon/eventhorizon:latest
-
