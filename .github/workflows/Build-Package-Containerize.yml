@@ -69,7 +69,7 @@ jobs:
       - name: Create and push multi-arch manifest
         run: |
           docker manifest create ghcr.io/rafmon/eventhorizon:latest \
-            --amend ghcr.io/rafmon/eventhorizon:linux-amd64 \
+            --amend ghcr.io/rafmon/eventhorizon:linux-x64 \
             --amend ghcr.io/rafmon/eventhorizon:linux-arm64 \
             --amend ghcr.io/rafmon/eventhorizon:linux-arm
           docker manifest push ghcr.io/rafmon/eventhorizon:latest
