@@ -21,7 +21,7 @@
 
 ### Steps
 
-1. **Clone the Repository**
+1. **Create Working Directory**
 
     Open a terminal on your Raspberry Pi and run the following command to create a work directory:
 
