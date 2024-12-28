@@ -23,7 +23,7 @@
 
 1. **Clone the Repository**
 
-    Open a terminal on your Raspberry Pi and run the following command to clone the repository:
+    Open a terminal on your Raspberry Pi and run the following command to create a work directory:
 
     ```sh
     mkdir EventHorizon
