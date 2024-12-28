@@ -27,7 +27,9 @@
 
     ```sh
     mkdir EventHorizon
-    cd EventHorizon
+    ```
+    ```sh
+     cd EventHorizon
     ```
 
 2. **Download the Docker Compose File**
