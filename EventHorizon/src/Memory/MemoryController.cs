@@ -10,7 +10,7 @@ using EventHorizon.src.Util;
 
 public class MemoryController
 {
-    private Dictionary<int,MemoryAddress> Addresses;
+    private Dictionary<int, MemoryAddress> Addresses;
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly SettingsManager _settings;
 
@@ -52,16 +52,10 @@ public class MemoryController
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error initializing I2C device at address {32 + i}: {ex.Message}");
-                if (_settings.SimulateI2CDevices)
-                {
-                    Console.WriteLine("Creating dummy device for address " + (32 + i));
-                    generateMemoryAddr(i, new MemoryDeviceDummy());
-                }
-                else
-                {
-                    Console.WriteLine("Could not find controller at address: " + (32 + i));
-                }
+                Console.WriteLine("Creating dummy device for address " + (32 + i));
+                generateMemoryAddr(i, new MemoryDeviceDummy());
+
+
             }
         }
     }
@@ -85,7 +79,7 @@ public class MemoryController
             if (existingAddress != null)
             {
                 existingAddress.Device = dev;
-                Addresses.Add(addr,existingAddress);
+                Addresses.Add(addr, existingAddress);
             }
             else
             {
